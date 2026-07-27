@@ -16,8 +16,8 @@
 // TODO: replace with your project's real values (Supabase Dashboard → Settings → API).
 // The anon key is safe to expose publicly — it only grants what your RLS
 // policies (supabase/migrations/0002_rls_policies.sql) allow.
-const SUPABASE_URL = 'https://YOUR-PROJECT-REF.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
+const SUPABASE_URL = 'https://ecxymfkbhsyxlgxipoaf.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_n8rPxSaI9U5g_iUSRdvCEA_GhwEPCQT';
 
 let _sb = null;
 function getSupabaseClient() {
@@ -60,8 +60,9 @@ async function loadProducts() {
     .select('*')
     .eq('status', 'active')
     .order('created_at', { ascending: false });
-
-  if (error) {
+console.log("Supabase error:", error);
+console.log("Supabase data:", data);
+    if (error) {
     console.error('Failed to load products from Supabase:', error.message);
     window.PRODUCTS = {};
     return window.PRODUCTS;
