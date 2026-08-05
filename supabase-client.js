@@ -34,6 +34,7 @@ function mapProductRow(row) {
     dbId: row.id, // real UUID, needed for cart/checkout calls; old data had no equivalent
     name: row.name,
     price: Number(row.price),
+    originalPrice: row.original_price != null ? Number(row.original_price) : null,
     c1: row.color_1,
     c2: row.color_2,
     eyebrow: row.eyebrow || '',
