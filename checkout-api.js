@@ -13,11 +13,23 @@ const CHECKOUT_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/checkout`;
 // `id` is the product's slug in the existing cart code — we look up dbId
 // (the real UUID) from window.PRODUCTS before sending, since the database
 // only knows products by UUID.
-async function submitOrder({ fullName, phone, email, address, city, postalCode }, cart) {
+//
+// The Edge Function's contract is unchanged: it still only expects
+// { fullName, phone, email, address, city, postalCode }. The structured
+// checkout fields (house number, area, street, district) are composed into
+// a single `address` string here on the frontend before sending, so no
+// backend/Edge Function changes are required.
+function composeAddress({ houseNumber, area, street, district }) {
+  return [houseNumber, area, street, district].filter(Boolean).join(', ');
+}
+
+async function submitOrder({ fullName, phone, email, houseNumber, area, street, district, city, postalCode }, cart) {
   const items = cart.map((line) => {
     const product = window.PRODUCTS[line.id];
     return { productId: product ? product.dbId : line.id, quantity: line.qty };
   });
+
+  const address = composeAddress({ houseNumber, area, street, district });
 
   const res = await fetch(CHECKOUT_FUNCTION_URL, {
     method: 'POST',

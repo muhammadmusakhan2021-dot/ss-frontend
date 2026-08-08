@@ -23,12 +23,13 @@
     --line: rgba(242,239,232,0.08);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  html{background:var(--black);}
+  html{background:var(--black); overflow-x:hidden; width:100%;}
   body{
     background:var(--black);
     color:var(--white);
     font-family:'Inter',sans-serif;
     overflow-x:hidden;
+    width:100%;
     cursor:none;
   }
   ::selection{background:var(--gold); color:var(--black);}
@@ -96,7 +97,27 @@
     transition:width .35s ease;
   }
   .nav-links a:hover::after{ width:100%; }
-  @media (max-width:800px){ .nav-links{display:none;} }
+  .nav-toggle{
+    display:none; flex-direction:column; justify-content:center; gap:5px;
+    width:38px; height:38px; background:none; border:none; padding:0; cursor:pointer; position:relative; z-index:260;
+  }
+  .nav-toggle span{ display:block; width:100%; height:2px; background:var(--white); transition:transform .3s ease, opacity .3s ease; }
+  .nav-toggle.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2){ opacity:0; }
+  .nav-toggle.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+  @media (max-width:800px){
+    nav > a.btn.ghost{ display:none; } /* redundant with the menu's own Shop link; avoids crowding on small screens */
+    nav.menu-open{ mix-blend-mode:normal; } /* the difference-blend look only makes sense over the hero, not a solid drawer */
+    .nav-toggle{ display:flex; }
+    .nav-links{
+      display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:30px;
+      position:fixed; top:0; right:0; height:100vh; width:76vw; max-width:340px;
+      background:var(--black-2); padding:40px 12vw; isolation:isolate; z-index:250;
+      transform:translateX(100%); transition:transform .4s ease; box-shadow:-20px 0 60px rgba(0,0,0,0.4);
+    }
+    .nav-links.open{ transform:translateX(0); }
+    .nav-links a{ font-size:16px; }
+  }
 
   /* ===== Magnetic button ===== */
   .btn{
@@ -172,6 +193,10 @@
     .feature-card{ width:42vw; padding:14px 16px; }
     .feature-card h3{ font-size:11.5px;} .feature-card p{ font-size:10.5px; display:none;}
   }
+  @media (max-width:560px){
+    .feature-card{ width:40vw; padding:12px 14px; }
+    .fc-1,.fc-3{ left:5%; } .fc-2,.fc-4{ right:5%; }
+  }
 
   /* ===== Performance (parallax) ===== */
   #performance{ position:relative; background:var(--black-2); padding:240px 0 260px; overflow:hidden;}
@@ -213,6 +238,7 @@
   @keyframes swatchSpin{ to{ transform:rotate(360deg); } }
   .pcard h3{ font-family:'Inter'; font-weight:700; font-size:18px; letter-spacing:0; text-transform:none; margin-bottom:6px;}
   .pcard .price{ color:var(--gold-bright); font-weight:600; font-size:14px; margin-bottom:18px; }
+  .pcard .price .price-old{ color:var(--white-dim); font-weight:400; text-decoration:line-through; margin-left:6px; }
   .pcard .btn{ width:100%; justify-content:center; padding:14px; font-size:11px; }
   @media (max-width:900px){ .showcase-grid{grid-template-columns:1fr 1fr; gap:16px;} }
   @media (max-width:600px){ .showcase-grid{grid-template-columns:1fr;} }
@@ -227,6 +253,10 @@
   /* ===== Testimonials ===== */
   #testimonials{ background:var(--black-2); padding:200px 0; overflow:hidden; }
   .t-track{ display:flex; gap:28px; margin-top:70px; }
+  @media (max-width:900px){
+    .t-track{ overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px; -webkit-overflow-scrolling:touch; }
+    .t-card{ flex:0 0 82vw; scroll-snap-align:start; }
+  }
   .t-card{
     flex:0 0 380px; padding:34px 30px; border-radius:18px;
     background:rgba(255,255,255,0.03); border:1px solid var(--line);
@@ -250,6 +280,7 @@
   .foot-logo span{ color:var(--gold); }
   .foot-tag{ color:var(--white-dim); font-size:13px; margin-top:14px; max-width:280px; font-weight:300;}
   .foot-links{ display:flex; gap:70px; }
+  @media (max-width:700px){ .foot-links{ flex-direction:column; gap:32px; } .foot-top{ gap:36px; } }
   .foot-col h4{ font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); margin-bottom:18px; }
   .foot-col a{ display:block; font-size:13.5px; color:var(--white-dim); margin-bottom:12px; transition:color .3s; font-weight:300;}
   .foot-col a:hover{ color:var(--white); }
@@ -318,11 +349,15 @@
   .checkout-card h3{ font-family:'Inter'; font-weight:700; font-size:20px; text-transform:none; margin-bottom:22px; }
   .ship-field{ margin-bottom:14px; }
   .ship-field label{ display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white-dim); margin-bottom:6px; }
+  .ship-field label .req{ color:var(--gold); }
+  .ship-field label .opt{ text-transform:none; letter-spacing:0; color:var(--white-dim); opacity:0.6; font-size:10px; }
+  .ship-field input.invalid{ border-color:#d16a6a; }
   .ship-field input{
     width:100%; padding:13px 14px; background:rgba(255,255,255,0.04); border:1px solid var(--line);
     border-radius:10px; color:var(--white); font-size:13.5px; font-family:'Inter';
   }
   .ship-field input:focus{ outline:none; border-color:var(--gold); }
+  @media (max-width:768px){ .ship-field input{ font-size:16px; } } /* prevents iOS Safari from auto-zooming in on focus */
   .pay-options{ display:flex; gap:12px; margin:20px 0; }
   .pay-opt{
     flex:1; border:1px solid var(--line); border-radius:12px; padding:16px; cursor:pointer; text-align:center;
@@ -343,7 +378,7 @@
     align-items:center; justify-content:center; cursor:pointer; font-size:16px;
   }
   .mon-panel{
-    position:fixed; bottom:80px; left:24px; z-index:400; width:300px; max-height:56vh; overflow-y:auto;
+    position:fixed; bottom:80px; left:24px; z-index:400; width:min(300px, calc(100vw - 48px)); max-height:56vh; overflow-y:auto;
     background:rgba(17,17,19,0.92); backdrop-filter:blur(10px); border:1px solid var(--line); border-radius:14px;
     padding:18px; transform:translateY(12px); opacity:0; pointer-events:none; transition:opacity .3s, transform .3s; cursor:auto;
   }
@@ -379,6 +414,7 @@
   .pd-main-shot img{ width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .4s ease; position:relative; z-index:1; }
   .pd-main-shot img.active{ opacity:1; }
   .pd-thumbs{ display:flex; gap:14px; margin-top:18px; }
+  @media (max-width:600px){ .pd-thumbs{ flex-wrap:wrap; } }
   .pd-thumb{
     width:76px; height:76px; border-radius:12px; overflow:hidden; cursor:pointer;
     border:1px solid var(--line); opacity:0.55; transition:opacity .3s, border-color .3s;
@@ -422,6 +458,7 @@
 
   /* Tabs: description / specifications / reviews */
   .pd-tabs{ display:flex; gap:34px; border-bottom:1px solid var(--line); margin-top:10px; }
+  @media (max-width:600px){ .pd-tabs{ gap:18px; } .pd-tab{ font-size:10.5px; } }
   .pd-tab{
     font-size:12px; letter-spacing:0.12em; text-transform:uppercase; font-weight:700;
     padding-bottom:16px; color:var(--white-dim); cursor:pointer; position:relative;
@@ -474,7 +511,26 @@
     <button id="cartBtn" class="cart-btn magnetic" aria-label="Cart">
       <span>Bag</span><span id="cartCount" class="cart-count">0</span>
     </button>
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+  <script>
+    // Mobile nav drawer — self-contained so it doesn't need to touch the
+    // large script later in the page. Only affects layout below 800px
+    // (see the @media rule in the stylesheet); desktop nav is untouched.
+    (function(){
+      var navEl = document.querySelector('nav');
+      var toggle = document.getElementById('navToggle');
+      var links = navEl.querySelector('.nav-links');
+      function closeMenu(){ navEl.classList.remove('menu-open'); toggle.classList.remove('open'); links.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
+      function openMenu(){ navEl.classList.add('menu-open'); toggle.classList.add('open'); links.classList.add('open'); toggle.setAttribute('aria-expanded','true'); }
+      toggle.addEventListener('click', function(){
+        links.classList.contains('open') ? closeMenu() : openMenu();
+      });
+      links.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+    })();
+  </script>
   <!-- PRODUCT -->
   <section class="pd-wrap">
     <div class="breadcrumb">
@@ -557,9 +613,15 @@
   <div class="checkout-modal" id="checkoutModal">
     <div class="checkout-card" id="checkoutCard">
       <h3>Checkout</h3>
-      <div class="ship-field"><label>Full Name</label><input id="ckName" type="text" placeholder="Your name"></div>
-      <div class="ship-field"><label>Delivery Address</label><input id="ckAddr" type="text" placeholder="Street, city, postal code"></div>
-      <div class="ship-field"><label>Phone</label><input id="ckPhone" type="tel" placeholder="For delivery updates"></div>
+      <div class="ship-field"><label>Full Name <span class="req">*</span></label><input id="ckName" type="text" placeholder="Your name"></div>
+      <div class="ship-field"><label>House / Flat No. <span class="req">*</span></label><input id="ckHouseNumber" type="text" placeholder="House / flat number"></div>
+      <div class="ship-field"><label>Area / Locality <span class="req">*</span></label><input id="ckArea" type="text" placeholder="e.g. Gulberg III"></div>
+      <div class="ship-field"><label>Street <span class="opt">(optional)</span></label><input id="ckStreet" type="text" placeholder="Street name"></div>
+      <div class="ship-field"><label>City <span class="req">*</span></label><input id="ckCity" type="text" placeholder="e.g. Lahore"></div>
+      <div class="ship-field"><label>District <span class="opt">(optional)</span></label><input id="ckDistrict" type="text" placeholder="District"></div>
+      <div class="ship-field"><label>Postal Code <span class="opt">(optional)</span></label><input id="ckPostalCode" type="text" placeholder="Postal code"></div>
+      <div class="ship-field"><label>Phone <span class="req">*</span></label><input id="ckPhone" type="tel" placeholder="For delivery updates"></div>
+      <div class="ship-field"><label>Email <span class="opt">(optional)</span></label><input id="ckEmail" type="email" placeholder="For order confirmation"></div>
 
       <div class="ship-field" style="margin-top:22px;"><label>Payment Method</label></div>
       <div class="pay-options">
@@ -714,14 +776,35 @@ function renderCheckoutTotals(){
   document.getElementById('ckTotal').textContent = fmt(subtotal);
 }
 
+function ckField(id){ return document.getElementById(id); }
+function markInvalid(el, bad){ el.classList.toggle('invalid', bad); }
+
 document.getElementById('placeOrderBtn').addEventListener('click', async ()=>{
-  const name = document.getElementById('ckName').value.trim();
-  const addr = document.getElementById('ckAddr').value.trim();
-  const phone = document.getElementById('ckPhone').value.trim();
-  if(!name || !addr || !phone){
+  const name = ckField('ckName').value.trim();
+  const houseNumber = ckField('ckHouseNumber').value.trim();
+  const area = ckField('ckArea').value.trim();
+  const street = ckField('ckStreet').value.trim();
+  const city = ckField('ckCity').value.trim();
+  const district = ckField('ckDistrict').value.trim();
+  const postalCode = ckField('ckPostalCode').value.trim();
+  const phone = ckField('ckPhone').value.trim();
+  const email = ckField('ckEmail').value.trim();
+
+  const required = [
+    ['ckName', name], ['ckHouseNumber', houseNumber], ['ckArea', area],
+    ['ckCity', city], ['ckPhone', phone],
+  ];
+  let hasError = false;
+  required.forEach(([id, val])=>{
+    const bad = !val;
+    markInvalid(ckField(id), bad);
+    if(bad) hasError = true;
+  });
+  if(hasError){
     gsap.fromTo('#checkoutCard', { x:-8 }, { x:0, duration:0.4, ease:'elastic.out(1,0.3)' });
     return;
   }
+
   const subtotal = cartSubtotal();
   const total = subtotal;
   const placeBtn = document.getElementById('placeOrderBtn');
@@ -729,8 +812,10 @@ document.getElementById('placeOrderBtn').addEventListener('click', async ()=>{
   const originalLabel = placeBtn.innerHTML;
   placeBtn.innerHTML = '<span class="mwrap">Placing order…</span>';
 
+  const addrSummary = [houseNumber, area, street, city].filter(Boolean).join(', ');
+
   try{
-    await submitOrder({ fullName:name, phone, email:'', address:addr, city:'', postalCode:'' }, cart);
+    await submitOrder({ fullName:name, phone, email, houseNumber, area, street, district, city, postalCode }, cart);
     monStats.orders++; updateMonPanel();
     logEvent(`Order placed — ${fmt(total)} (COD)`);
 
@@ -739,7 +824,7 @@ document.getElementById('placeOrderBtn').addEventListener('click', async ()=>{
         <div class="ok-mark">✓</div>
         <h3 style="margin-bottom:8px;">Order Confirmed</h3>
         <p style="color:var(--white-dim); font-size:13.5px; line-height:1.7; max-width:380px; margin:0 auto;">
-          Thanks, ${name}. Your order of ${fmt(total)} via Cash on Delivery is on its way to ${addr}.
+          Thanks, ${name}. Your order of ${fmt(total)} via Cash on Delivery is on its way to ${addrSummary}.
         </p>
         <button class="btn magnetic" style="margin-top:24px;" id="ckDone"><span class="mwrap">Continue Shopping</span></button>
       </div>`;
@@ -755,10 +840,14 @@ document.getElementById('placeOrderBtn').addEventListener('click', async ()=>{
   }
 });
 
-/* Which product to show: ?id=onyx in the URL, default to onyx */
+/* Which product to show: ?id=slug in the URL.
+   `product` is filled in by initProductPage() below, once the Supabase
+   fetch (window.loadProducts()) has actually resolved — this used to be a
+   synchronous read of the old static PRODUCTS object, which is why the
+   page previously crashed with "PRODUCTS is not defined" before it ever
+   got the chance to load real data. */
 const params = new URLSearchParams(location.search);
-const activeId = PRODUCTS[params.get('id')] ? params.get('id') : 'trionda';
-const product = PRODUCTS[activeId];
+let product = null;
 let activeImageIndex = 0;
 let pdQty = 1;
 
@@ -798,6 +887,13 @@ function renderInfo(){
   document.getElementById('pdStars').textContent = '★★★★★'.slice(0, Math.round(product.rating)) + '☆☆☆☆☆'.slice(0, 5-Math.round(product.rating));
   document.getElementById('pdReviewCount').textContent = `${product.rating} · ${product.reviewCount} reviews`;
   document.getElementById('pdPrice').textContent = fmt(product.price);
+  const oldPriceEl = document.getElementById('pdPriceOld');
+  if(product.originalPrice && product.originalPrice > product.price){
+    oldPriceEl.textContent = fmt(product.originalPrice);
+    oldPriceEl.style.display = 'inline';
+  } else {
+    oldPriceEl.style.display = 'none';
+  }
   document.getElementById('pdShortDesc').textContent = product.shortDesc;
   document.getElementById('pdFeatures').innerHTML = product.features.map(f=>`<li>${f}</li>`).join('');
   document.getElementById('pdDescPanel').innerHTML = `<p>${product.description}</p>`;
@@ -817,12 +913,13 @@ function renderInfo(){
 
 /* ============ RENDER: related products ============ */
 function renderRelated(){
-  const others = Object.values(PRODUCTS).filter(p=>p.id!==product.id);
+  const others = Object.values(window.PRODUCTS).filter(p=>p.id!==product.id);
   document.getElementById('pdRelated').innerHTML = others.map(p=>`
     <div class="pcard reveal" style="--c1:${p.c1}; --c2:${p.c2};">
       <a href="product.html?id=${p.id}" style="display:block;">
         <div class="swatch"><div class="glow"></div><img class="swatch-photo" src="${p.images[0]}" alt="${p.name}"></div>
-        <h3>${p.name}</h3><div class="price">${fmt(p.price)}</div>
+        <h3>${p.name}</h3>
+        <div class="price">${fmt(p.price)}${(p.originalPrice && p.originalPrice > p.price) ? ` <span class="price-old">${fmt(p.originalPrice)}</span>` : ''}</div>
       </a>
       <button class="btn magnetic add-to-bag" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-c1="${p.c1}" data-c2="${p.c2}"><span class="mwrap">Add to Bag</span></button>
     </div>
@@ -869,32 +966,61 @@ document.querySelectorAll('.pd-tab').forEach(tab=>{
 });
 
 /* ============ Init ============ */
-renderGallery();
-renderInfo();
-renderRelated();
-renderQty();
-renderCart();
+// Fetches the live catalog from Supabase, resolves which product this page
+// should show (?id=slug in the URL, falling back to the first product if
+// missing/unknown), then renders. Runs for every product the same way —
+// nothing here is specific to any one ball.
+async function initProductPage(){
+  await window.loadProducts();
+  const requestedId = params.get('id');
+  const activeId = (requestedId && window.PRODUCTS[requestedId]) ? requestedId : Object.keys(window.PRODUCTS)[0];
+  product = window.PRODUCTS[activeId];
 
-gsap.from('nav', { y:-40, opacity:0, duration:1, delay:0.2, ease:'power3.out' });
-gsap.from('.pd-gallery', { opacity:0, y:24, duration:0.9, delay:0.3, ease:'power3.out' });
-gsap.from('.pd-info', { opacity:0, y:24, duration:0.9, delay:0.45, ease:'power3.out' });
-gsap.utils.toArray('#pdRelated .pcard').forEach((card,i)=>{
-  gsap.to(card, { opacity:1, y:0, duration:0.9, delay:i*0.08, ease:'power3.out', scrollTrigger:{ trigger:card, start:'top 90%' } });
-});
+  if(!product){
+    document.getElementById('loader').innerHTML = `
+      <div class="mark">SOCCER SPHERE</div>
+      <div class="pct" style="color:var(--white-dim); letter-spacing:0.05em;">We couldn't find that product.</div>
+      <a href="index.html" class="btn magnetic" style="margin-top:6px;"><span class="mwrap">Back to Shop</span></a>`;
+    return;
+  }
+
+  renderGallery();
+  renderInfo();
+  renderRelated();
+  renderQty();
+  renderCart();
+
+  gsap.from('nav', { y:-40, opacity:0, duration:1, delay:0.2, ease:'power3.out' });
+  gsap.from('.pd-gallery', { opacity:0, y:24, duration:0.9, delay:0.3, ease:'power3.out' });
+  gsap.from('.pd-info', { opacity:0, y:24, duration:0.9, delay:0.45, ease:'power3.out' });
+  gsap.utils.toArray('#pdRelated .pcard').forEach((card,i)=>{
+    gsap.to(card, { opacity:1, y:0, duration:0.9, delay:i*0.08, ease:'power3.out', scrollTrigger:{ trigger:card, start:'top 90%' } });
+  });
+}
+const productReady = initProductPage();
 
 /* ============ LOADER ============ */
+// Keeps the same animated 0→100% bar look as before, but the bar can now
+// only ever reach 100% and fade out once the real product data has
+// actually finished loading (productReady) — it no longer completes on a
+// timer that can outrace (or precede) the Supabase fetch.
 window.addEventListener('load', ()=>{
   const bar = document.getElementById('loadbar'), pct = document.getElementById('loadpct');
   let p = 0;
   const iv = setInterval(()=>{
-    p += Math.random()*22;
-    if(p>=100){ p=100; clearInterval(iv); }
-    bar.style.width = p+'%'; pct.textContent = Math.floor(p)+'%';
-    if(p===100){
-      setTimeout(()=>{
-        gsap.to('#loader', { opacity:0, duration:0.7, ease:'power2.out', onComplete(){ document.getElementById('loader').style.display='none'; } });
-      }, 200);
+    p += Math.random()*18;
+    if(p>=92){
+      p=92; clearInterval(iv);
+      bar.style.width = '92%'; pct.textContent = '92%';
+      productReady.finally(()=>{
+        bar.style.width = '100%'; pct.textContent = '100%';
+        setTimeout(()=>{
+          gsap.to('#loader', { opacity:0, duration:0.7, ease:'power2.out', onComplete(){ document.getElementById('loader').style.display='none'; } });
+        }, 200);
+      });
+      return;
     }
+    bar.style.width = p+'%'; pct.textContent = Math.floor(p)+'%';
   }, 120);
 });
 })();
