@@ -23,12 +23,13 @@
     --line: rgba(242,239,232,0.08);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  html{background:var(--black);}
+  html{background:var(--black); overflow-x:hidden; width:100%;}
   body{
     background:var(--black);
     color:var(--white);
     font-family:'Inter',sans-serif;
     overflow-x:hidden;
+    width:100%;
     cursor:none;
   }
   ::selection{background:var(--gold); color:var(--black);}
@@ -96,7 +97,27 @@
     transition:width .35s ease;
   }
   .nav-links a:hover::after{ width:100%; }
-  @media (max-width:800px){ .nav-links{display:none;} }
+  .nav-toggle{
+    display:none; flex-direction:column; justify-content:center; gap:5px;
+    width:38px; height:38px; background:none; border:none; padding:0; cursor:pointer; position:relative; z-index:260;
+  }
+  .nav-toggle span{ display:block; width:100%; height:2px; background:var(--white); transition:transform .3s ease, opacity .3s ease; }
+  .nav-toggle.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2){ opacity:0; }
+  .nav-toggle.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+  @media (max-width:800px){
+    nav > a.btn.ghost{ display:none; } /* redundant with the menu's own Shop link; avoids crowding on small screens */
+    nav.menu-open{ mix-blend-mode:normal; } /* the difference-blend look only makes sense over the hero, not a solid drawer */
+    .nav-toggle{ display:flex; }
+    .nav-links{
+      display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:30px;
+      position:fixed; top:0; right:0; height:100vh; width:76vw; max-width:340px;
+      background:var(--black-2); padding:40px 12vw; isolation:isolate; z-index:250;
+      transform:translateX(100%); transition:transform .4s ease; box-shadow:-20px 0 60px rgba(0,0,0,0.4);
+    }
+    .nav-links.open{ transform:translateX(0); }
+    .nav-links a{ font-size:16px; }
+  }
 
   /* ===== Magnetic button ===== */
   .btn{
@@ -153,8 +174,8 @@
   .center{ text-align:center; }
 
   /* ===== Craftsmanship ===== */
-  #craft{ height:420vh; position:relative; background:var(--black); }
-  #craft-pin{ position:sticky; top:0; height:100svh; overflow:hidden; }
+  #craft{ height:220vh; position:relative; background:var(--black); }
+  #craft-pin{ height:100svh; overflow:hidden; }
   #craft-canvas{ position:absolute; inset:0; z-index:1; }
   .craft-head{
     position:absolute; top:90px; left:0; right:0; z-index:3; text-align:center; pointer-events:none;
@@ -170,11 +191,16 @@
   .fc-3{ bottom:14%; left:8%; } .fc-4{ bottom:14%; right:8%; }
   @media (max-width:900px){
     .feature-card{ width:42vw; padding:14px 16px; }
-    .feature-card h3{ font-size:11.5px;} .feature-card p{ font-size:10.5px; display:none;}
+    .feature-card h3{ font-size:11.5px; margin-bottom:4px; }
+    .feature-card p{ font-size:9.5px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  }
+  @media (max-width:560px){
+    .feature-card{ width:40vw; padding:12px 14px; }
+    .fc-1,.fc-3{ left:5%; } .fc-2,.fc-4{ right:5%; }
   }
 
   /* ===== Performance (parallax) ===== */
-  #performance{ position:relative; background:var(--black-2); padding:240px 0 260px; overflow:hidden;}
+  #performance{ position:relative; background:var(--black-2); padding:110px 0 260px; overflow:hidden;}
   .perf-stack{ position:relative; height:60vh; display:flex; align-items:center; justify-content:center; }
   .perf-row{ position:absolute; white-space:nowrap; font-size:clamp(46px,11vw,170px); color:transparent; -webkit-text-stroke:1px var(--line); display:flex; gap:0.4em;}
   .perf-row.fill{ -webkit-text-stroke:0; color:var(--white); }
@@ -213,6 +239,7 @@
   @keyframes swatchSpin{ to{ transform:rotate(360deg); } }
   .pcard h3{ font-family:'Inter'; font-weight:700; font-size:18px; letter-spacing:0; text-transform:none; margin-bottom:6px;}
   .pcard .price{ color:var(--gold-bright); font-weight:600; font-size:14px; margin-bottom:18px; }
+  .pcard .price .price-old{ color:var(--white-dim); font-weight:400; text-decoration:line-through; margin-left:6px; }
   .pcard .btn{ width:100%; justify-content:center; padding:14px; font-size:11px; }
   @media (max-width:900px){ .showcase-grid{grid-template-columns:1fr 1fr; gap:16px;} }
   @media (max-width:600px){ .showcase-grid{grid-template-columns:1fr;} }
@@ -227,6 +254,10 @@
   /* ===== Testimonials ===== */
   #testimonials{ background:var(--black-2); padding:200px 0; overflow:hidden; }
   .t-track{ display:flex; gap:28px; margin-top:70px; }
+  @media (max-width:900px){
+    .t-track{ overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:8px; -webkit-overflow-scrolling:touch; }
+    .t-card{ flex:0 0 82vw; scroll-snap-align:start; }
+  }
   .t-card{
     flex:0 0 380px; padding:34px 30px; border-radius:18px;
     background:rgba(255,255,255,0.03); border:1px solid var(--line);
@@ -250,6 +281,7 @@
   .foot-logo span{ color:var(--gold); }
   .foot-tag{ color:var(--white-dim); font-size:13px; margin-top:14px; max-width:280px; font-weight:300;}
   .foot-links{ display:flex; gap:70px; }
+  @media (max-width:700px){ .foot-links{ flex-direction:column; gap:32px; } .foot-top{ gap:36px; } }
   .foot-col h4{ font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); margin-bottom:18px; }
   .foot-col a{ display:block; font-size:13.5px; color:var(--white-dim); margin-bottom:12px; transition:color .3s; font-weight:300;}
   .foot-col a:hover{ color:var(--white); }
@@ -318,11 +350,15 @@
   .checkout-card h3{ font-family:'Inter'; font-weight:700; font-size:20px; text-transform:none; margin-bottom:22px; }
   .ship-field{ margin-bottom:14px; }
   .ship-field label{ display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--white-dim); margin-bottom:6px; }
+  .ship-field label .req{ color:var(--gold); }
+  .ship-field label .opt{ text-transform:none; letter-spacing:0; color:var(--white-dim); opacity:0.6; font-size:10px; }
+  .ship-field input.invalid{ border-color:#d16a6a; }
   .ship-field input{
     width:100%; padding:13px 14px; background:rgba(255,255,255,0.04); border:1px solid var(--line);
     border-radius:10px; color:var(--white); font-size:13.5px; font-family:'Inter';
   }
   .ship-field input:focus{ outline:none; border-color:var(--gold); }
+  @media (max-width:768px){ .ship-field input{ font-size:16px; } } /* prevents iOS Safari from auto-zooming in on focus */
   .pay-options{ display:flex; gap:12px; margin:20px 0; }
   .pay-opt{
     flex:1; border:1px solid var(--line); border-radius:12px; padding:16px; cursor:pointer; text-align:center;
@@ -343,7 +379,7 @@
     align-items:center; justify-content:center; cursor:pointer; font-size:16px;
   }
   .mon-panel{
-    position:fixed; bottom:80px; left:24px; z-index:400; width:300px; max-height:56vh; overflow-y:auto;
+    position:fixed; bottom:80px; left:24px; z-index:400; width:min(300px, calc(100vw - 48px)); max-height:56vh; overflow-y:auto;
     background:rgba(17,17,19,0.92); backdrop-filter:blur(10px); border:1px solid var(--line); border-radius:14px;
     padding:18px; transform:translateY(12px); opacity:0; pointer-events:none; transition:opacity .3s, transform .3s; cursor:auto;
   }
@@ -381,7 +417,26 @@
     <button id="cartBtn" class="cart-btn magnetic" aria-label="Cart">
       <span>Bag</span><span id="cartCount" class="cart-count">0</span>
     </button>
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+  <script>
+    // Mobile nav drawer — self-contained so it doesn't need to touch the
+    // large scripts later in the page. Only affects layout below 800px
+    // (see the @media rule in the stylesheet); desktop nav is untouched.
+    (function(){
+      var navEl = document.querySelector('nav');
+      var toggle = document.getElementById('navToggle');
+      var links = navEl.querySelector('.nav-links');
+      function closeMenu(){ navEl.classList.remove('menu-open'); toggle.classList.remove('open'); links.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
+      function openMenu(){ navEl.classList.add('menu-open'); toggle.classList.add('open'); links.classList.add('open'); toggle.setAttribute('aria-expanded','true'); }
+      toggle.addEventListener('click', function(){
+        links.classList.contains('open') ? closeMenu() : openMenu();
+      });
+      links.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+    })();
+  </script>
 
   <!-- HERO -->
   <section id="hero">
@@ -411,7 +466,7 @@
       </div>
       <div class="feature-card fc-1"><h3>Professional Grip</h3><p>Micro-textured surface engineered for control in wet and dry conditions alike.</p></div>
       <div class="feature-card fc-2"><h3>Tournament Quality</h3><p>FIFA-spec roundness and rebound, tested across thousands of strikes.</p></div>
-      <div class="feature-card fc-3"><h3>Machine Stitch Precision</h3><p>32 precision machine-stitched panels engineered for consistent seam alignment, durable construction, and reliable match performance.</p></div>
+      <div class="feature-card fc-3"><h3>Machine Stitch Precision</h3><p>Machine-stitched footballs engineered for consistent seam alignment, durable construction, and reliable match performance.</p></div>
       <div class="feature-card fc-4"><h3>Durable PU Leather</h3><p>Water-resistant outer layer built to hold shape through every season.</p></div>
     </div>
   </section>
@@ -463,7 +518,8 @@
             <div class="pcard reveal" style="--c1:${p.c1}; --c2:${p.c2};">
               <a href="product.html?id=${p.id}" style="display:block;">
                 <div class="swatch"><div class="glow"></div><img class="swatch-photo" src="${p.images[0]}" alt="${p.name}"></div>
-                <h3>${p.name}</h3><div class="price">Rs ${p.price.toLocaleString('en-PK')}</div>
+                <h3>${p.name}</h3>
+                <div class="price">Rs ${p.price.toLocaleString('en-PK')}${(p.originalPrice && p.originalPrice > p.price) ? ` <span class="price-old">Rs ${p.originalPrice.toLocaleString('en-PK')}</span>` : ''}</div>
               </a>
               <button class="btn magnetic add-to-bag" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-c1="${p.c1}" data-c2="${p.c2}"><span class="mwrap">Add to Bag</span></button>
             </div>
@@ -483,7 +539,7 @@
       <h2 class="big-title" style="font-size:clamp(34px,5.6vw,72px); margin-top:10px;">Trusted On Every Pitch</h2>
       <div class="stat-grid">
         <div class="stat"><div class="num" data-count="1000" data-suffix="+">0</div><div class="label">Happy Players</div></div>
-        <div class="stat"><div class="num" data-count="32">0</div><div class="label">Machine-Stitched Panels</div></div>
+        <div class="stat"><div class="num" data-count="32">0</div><div class="label">Machine-Stitched Footballs</div></div>
         <div class="stat"><div class="num" data-count="98" data-suffix="%">0</div><div class="label">Match-Day Approval</div></div>
         <div class="stat"><div class="num" data-count="0" data-suffix="Free" data-static="true">Free</div><div class="label">Delivery All Over Pakistan</div></div>
       </div>
@@ -529,9 +585,15 @@
   <div class="checkout-modal" id="checkoutModal">
     <div class="checkout-card" id="checkoutCard">
       <h3>Checkout</h3>
-      <div class="ship-field"><label>Full Name</label><input id="ckName" type="text" placeholder="Your name"></div>
-      <div class="ship-field"><label>Delivery Address</label><input id="ckAddr" type="text" placeholder="Street, city, postal code"></div>
-      <div class="ship-field"><label>Phone</label><input id="ckPhone" type="tel" placeholder="For delivery updates"></div>
+      <div class="ship-field"><label>Full Name <span class="req">*</span></label><input id="ckName" type="text" placeholder="Your name"></div>
+      <div class="ship-field"><label>House / Flat No. <span class="req">*</span></label><input id="ckHouseNumber" type="text" placeholder="House / flat number"></div>
+      <div class="ship-field"><label>Area / Locality <span class="req">*</span></label><input id="ckArea" type="text" placeholder="e.g. Gulberg III"></div>
+      <div class="ship-field"><label>Street <span class="opt">(optional)</span></label><input id="ckStreet" type="text" placeholder="Street name"></div>
+      <div class="ship-field"><label>City <span class="req">*</span></label><input id="ckCity" type="text" placeholder="e.g. Lahore"></div>
+      <div class="ship-field"><label>District <span class="opt">(optional)</span></label><input id="ckDistrict" type="text" placeholder="District"></div>
+      <div class="ship-field"><label>Postal Code <span class="opt">(optional)</span></label><input id="ckPostalCode" type="text" placeholder="Postal code"></div>
+      <div class="ship-field"><label>Phone <span class="req">*</span></label><input id="ckPhone" type="tel" placeholder="For delivery updates"></div>
+      <div class="ship-field"><label>Email <span class="opt">(optional)</span></label><input id="ckEmail" type="email" placeholder="For order confirmation"></div>
 
       <div class="ship-field" style="margin-top:22px;"><label>Payment Method</label></div>
       <div class="pay-options">
@@ -632,13 +694,27 @@ function b64ToBuffer(b64, Ctor, count){
   return new Ctor(bytes.buffer, 0, count);
 }
 
-function b64ToTex(b64, mimeType, srgb){
+// Textures decode asynchronously. Previously the mesh/material were handed
+// to the renderer immediately, so the very first paint of the ball could
+// happen before the image data had actually finished decoding — the ball
+// would render (briefly, or on a slow connection not-so-briefly) as a bare
+// grey sphere with no leather texture, which is what read as "not
+// rendering correctly" / unreliable. This tracks real readiness and forces
+// an extra render the moment each texture actually finishes loading, for
+// every ball scene that currently exists, instead of just hoping the
+// existing per-frame loop happens to catch it.
+const _ballTexReadyCallbacks = [];
+function b64ToTex(b64, mimeType, srgb, onReady){
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
   const blob = new Blob([bytes], {type: mimeType});
   const url = URL.createObjectURL(blob);
-  const tex = new THREE.TextureLoader().load(url);
+  const tex = new THREE.TextureLoader().load(url, ()=>{
+    tex.needsUpdate = true;
+    URL.revokeObjectURL(url);
+    if(onReady) onReady();
+  });
   tex.flipY = false;
   if(srgb && THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
   return tex;
@@ -659,18 +735,29 @@ function buildNikeBallGeometry(){
 
 function buildNikeBallMesh(){
   const geo = buildNikeBallGeometry();
-  const baseTex = b64ToTex(BALL_BASE, 'image/png', true);
-  const mrTex   = b64ToTex(BALL_MR,   'image/png', false);
   const mat = new THREE.MeshPhysicalMaterial({
-    map: baseTex,
-    metalnessMap: mrTex,
-    roughnessMap: mrTex,
-    metalness: 0.5,
-    roughness: 0.6,
-    clearcoat: 0.6,
-    clearcoatRoughness: 0.1,
-    envMapIntensity: 1.2,
+    // Matches the panel material's metalness (0.05) used elsewhere in this
+    // scene — 0.5 was making a PU/leather ball read as a metal/chrome
+    // sphere regardless of the base color texture. Clearcoat/envMap were
+    // also turned down so the surface reads as a light leather sheen
+    // rather than a lacquered/metallic finish.
+    metalness: 0.06,
+    roughness: 0.8,
+    clearcoat: 0.08,
+    clearcoatRoughness: 0.5,
+    envMapIntensity: 0.4,
   });
+  let readyCount = 0;
+  const onTexReady = ()=>{
+    readyCount++;
+    if(readyCount === 2){
+      mat.needsUpdate = true;
+      _ballTexReadyCallbacks.forEach(fn=>fn());
+    }
+  };
+  mat.map = b64ToTex(BALL_BASE, 'image/png', true, onTexReady);
+  mat.metalnessMap = b64ToTex(BALL_MR, 'image/png', false, onTexReady);
+  mat.roughnessMap = mat.metalnessMap;
   const mesh = new THREE.Mesh(geo, mat);
   mesh.castShadow = true;
   return mesh;
@@ -689,8 +776,18 @@ function getNikeBall(radius){
 }
 
 const ballSlots = [];
+const ballRenderers = [];
 function registerBallSlot(group, radius){ ballSlots.push({group,radius}); }
 function buildBall(radius){ return getNikeBall(radius); } // alias so rest of code unchanged
+
+// Once both ball textures are actually decoded, force one extra render on
+// every renderer that already exists — covers the case where a scene's
+// gated loop is paused (off-screen, or mid-pause between frames) at the
+// exact moment loading finishes, so that scene's *next* real activation
+// shows the finished ball immediately instead of one stale grey frame.
+_ballTexReadyCallbacks.push(()=>{
+  ballRenderers.forEach(({renderer, scene, cam})=>{ try{ renderer.render(scene, cam); }catch(e){} });
+});
 
 
 function addLights(scene, {gold=true}={}){
@@ -724,6 +821,7 @@ const heroScene = new THREE.Scene();
 const heroCam = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
 heroCam.position.set(0,0,5);
 const heroRenderer = new THREE.WebGLRenderer({canvas:heroCanvas, antialias:true, alpha:true});
+ballRenderers.push({renderer:heroRenderer, scene:heroScene, cam:heroCam});
 heroRenderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
 heroRenderer.setSize(innerWidth, innerHeight);
 const heroBall = new THREE.Group(); heroBall.add(buildBall(1.3)); heroBall.scale.set(0.001,0.001,0.001); heroScene.add(heroBall);
@@ -827,24 +925,37 @@ window.addEventListener('resize', ()=>{
   craftRenderer.setSize(innerWidth, innerHeight);
 });
 
+// ONE coordinated timeline/ScrollTrigger drives the whole Craftsmanship
+// sequence — the panel explode, the four card reveals, and the panel
+// implode all live on this same timeline instead of two separate
+// ScrollTrigger instances. Two independently-scrubbed timelines could
+// drift apart from each other in edge cases (e.g. GSAP recalculating
+// their scroll ranges slightly differently on resize); a single timeline
+// makes that impossible, since everything is positioned against the same
+// clock.
 const craftTl = gsap.timeline({
-  scrollTrigger:{ trigger:'#craft', start:'top top', end:'bottom bottom', scrub:0.8 }
+  scrollTrigger:{
+    trigger:'#craft', start:'top top', end:'bottom bottom', scrub:0.8,
+    pin:'#craft-pin', pinSpacing:false, anticipatePin:1,
+  }
 });
 panels.forEach((p,i)=>{
   const explodeDist = 1.25 + 1.4 + Math.random()*0.6;
-  craftTl.to(p.position, { x:p.userData.dir.x*explodeDist, y:p.userData.dir.y*explodeDist, z:p.userData.dir.z*explodeDist, duration:1, ease:'power2.out' }, 0.05 + (i%10)*0.01);
+  craftTl.to(p.position, { x:p.userData.dir.x*explodeDist, y:p.userData.dir.y*explodeDist, z:p.userData.dir.z*explodeDist, duration:0.8, ease:'power2.out' }, 0.05 + (i%10)*0.008);
 });
+// Cards start appearing at 0.5 — while the explode tweens above (which run
+// from 0.05 to ~0.92) are still actively animating — so the four cards
+// visibly arrive DURING the explosion, not after the user has already
+// scrolled past it.
+craftTl
+  .to('.fc-1', { opacity:1, y:0, duration:0.4 }, 0.5)
+  .to('.fc-2', { opacity:1, y:0, duration:0.4 }, 0.65)
+  .to('.fc-3', { opacity:1, y:0, duration:0.4 }, 0.8)
+  .to('.fc-4', { opacity:1, y:0, duration:0.4 }, 0.95)
+  .to('.fc-1,.fc-2,.fc-3,.fc-4', { opacity:0, y:-20, duration:0.35 }, 2.35);
 panels.forEach((p,i)=>{
-  craftTl.to(p.position, { x:p.userData.dir.x*1.25, y:p.userData.dir.y*1.25, z:p.userData.dir.z*1.25, duration:1, ease:'power2.inOut' }, 2.4 + (i%10)*0.01);
+  craftTl.to(p.position, { x:p.userData.dir.x*1.25, y:p.userData.dir.y*1.25, z:p.userData.dir.z*1.25, duration:0.8, ease:'power2.inOut' }, 1.9 + (i%10)*0.008);
 });
-
-// feature cards fade in while exploded
-gsap.timeline({ scrollTrigger:{ trigger:'#craft', start:'top top', end:'bottom bottom', scrub:0.8 } })
-  .to('.fc-1', { opacity:1, y:0, duration:0.5 }, 1.1)
-  .to('.fc-2', { opacity:1, y:0, duration:0.5 }, 1.3)
-  .to('.fc-3', { opacity:1, y:0, duration:0.5 }, 1.5)
-  .to('.fc-4', { opacity:1, y:0, duration:0.5 }, 1.7)
-  .to('.fc-1,.fc-2,.fc-3,.fc-4', { opacity:0, y:-20, duration:0.4 }, 2.3);
 
 /* ============ PERFORMANCE PARALLAX ============ */
 gsap.to('#prow1', { xPercent:-18, scrollTrigger:{ trigger:'#performance', start:'top bottom', end:'bottom top', scrub:1 } });
@@ -863,6 +974,7 @@ const dragScene = new THREE.Scene();
 const dragCam = new THREE.PerspectiveCamera(45, dragWrap.clientWidth/dragWrap.clientHeight, 0.1, 100);
 dragCam.position.set(0,0,3.4);
 const dragRenderer = new THREE.WebGLRenderer({canvas:dragCanvas, antialias:true, alpha:true});
+ballRenderers.push({renderer:dragRenderer, scene:dragScene, cam:dragCam});
 dragRenderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
 dragRenderer.setSize(dragWrap.clientWidth, dragWrap.clientHeight);
 const dragLights = addLights(dragScene);
@@ -945,6 +1057,7 @@ const finalScene = new THREE.Scene();
 const finalCam = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
 finalCam.position.set(0,0,4.5);
 const finalRenderer = new THREE.WebGLRenderer({canvas:finalCanvas, antialias:true, alpha:true});
+ballRenderers.push({renderer:finalRenderer, scene:finalScene, cam:finalCam});
 finalRenderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
 finalRenderer.setSize(innerWidth, innerHeight);
 addLights(finalScene);
@@ -1063,14 +1176,35 @@ function renderCheckoutTotals(){
   document.getElementById('ckTotal').textContent = fmt(subtotal);
 }
 
+function ckField(id){ return document.getElementById(id); }
+function markInvalid(el, bad){ el.classList.toggle('invalid', bad); }
+
 document.getElementById('placeOrderBtn').addEventListener('click', async ()=>{
-  const name = document.getElementById('ckName').value.trim();
-  const addr = document.getElementById('ckAddr').value.trim();
-  const phone = document.getElementById('ckPhone').value.trim();
-  if(!name || !addr || !phone){
+  const name = ckField('ckName').value.trim();
+  const houseNumber = ckField('ckHouseNumber').value.trim();
+  const area = ckField('ckArea').value.trim();
+  const street = ckField('ckStreet').value.trim();
+  const city = ckField('ckCity').value.trim();
+  const district = ckField('ckDistrict').value.trim();
+  const postalCode = ckField('ckPostalCode').value.trim();
+  const phone = ckField('ckPhone').value.trim();
+  const email = ckField('ckEmail').value.trim();
+
+  const required = [
+    ['ckName', name], ['ckHouseNumber', houseNumber], ['ckArea', area],
+    ['ckCity', city], ['ckPhone', phone],
+  ];
+  let hasError = false;
+  required.forEach(([id, val])=>{
+    const bad = !val;
+    markInvalid(ckField(id), bad);
+    if(bad) hasError = true;
+  });
+  if(hasError){
     gsap.fromTo('#checkoutCard', { x:-8 }, { x:0, duration:0.4, ease:'elastic.out(1,0.3)' });
     return;
   }
+
   const subtotal = cartSubtotal();
   const total = subtotal;
   const placeBtn = document.getElementById('placeOrderBtn');
@@ -1078,8 +1212,10 @@ document.getElementById('placeOrderBtn').addEventListener('click', async ()=>{
   const originalLabel = placeBtn.innerHTML;
   placeBtn.innerHTML = '<span class="mwrap">Placing order…</span>';
 
+  const addrSummary = [houseNumber, area, street, city].filter(Boolean).join(', ');
+
   try{
-    await submitOrder({ fullName:name, phone, email:'', address:addr, city:'', postalCode:'' }, cart);
+    await submitOrder({ fullName:name, phone, email, houseNumber, area, street, district, city, postalCode }, cart);
     monStats.orders++; updateMonPanel();
     logEvent(`Order placed — ${fmt(total)} (COD)`);
 
@@ -1088,7 +1224,7 @@ document.getElementById('placeOrderBtn').addEventListener('click', async ()=>{
         <div class="ok-mark">✓</div>
         <h3 style="margin-bottom:8px;">Order Confirmed</h3>
         <p style="color:var(--white-dim); font-size:13.5px; line-height:1.7; max-width:380px; margin:0 auto;">
-          Thanks, ${name}. Your order of ${fmt(total)} via Cash on Delivery is on its way to ${addr}.
+          Thanks, ${name}. Your order of ${fmt(total)} via Cash on Delivery is on its way to ${addrSummary}.
         </p>
         <button class="btn magnetic" style="margin-top:24px;" id="ckDone"><span class="mwrap">Continue Shopping</span></button>
       </div>`;
