@@ -17,7 +17,7 @@
 // The anon key is safe to expose publicly — it only grants what your RLS
 // policies (supabase/migrations/0002_rls_policies.sql) allow.
 const SUPABASE_URL = 'https://ecxymfkbhsyxlgxipoaf.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_n8rPxSaI9U5g_iUSRdvCEA_GhwEPCQT';
+publishable_n8rPxSaI9U5g_iUSRdconst SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjeHltZmtiaHN5eGxneGlwb2FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjAxNTEsImV4cCI6MjEwMDE5NjE1MX0.THyR4lkCC_R-MUcmBX0S_QlwRn0YR-NTiSQSVAUAF8k';
 
 let _sb = null;
 function getSupabaseClient() {
